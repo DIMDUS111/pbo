@@ -2,96 +2,90 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Modern Login App</title>
+<title>PBO Login – Gen Z</title>
 
 <style>
 *{
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+    box-sizing:border-box;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
+
 body{
     margin:0;
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    background: linear-gradient(135deg,#667eea,#764ba2);
+    background: linear-gradient(120deg,#c2e9fb,#d4b6f5,#fbc2eb);
 }
-.card{
-    background:#fff;
+
+/* GLASS CARD */
+.box{
     width:340px;
-    padding:30px;
-    border-radius:16px;
-    box-shadow:0 20px 40px rgba(0,0,0,.2);
-    animation: fadeIn .6s ease;
-}
-h2{
+    padding:32px;
+    border-radius:20px;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.15);
     text-align:center;
-    margin-bottom:25px;
+    animation: pop .6s ease;
+}
+
+@keyframes pop{
+    from{opacity:0; transform:scale(.95)}
+    to{opacity:1; transform:scale(1)}
+}
+
+/* TITLE */
+h2{
+    margin-bottom:26px;
+    font-weight:600;
     color:#333;
 }
-.group{
-    position:relative;
-    margin-bottom:20px;
-}
-.group input{
+
+/* INPUT */
+input{
     width:100%;
-    padding:12px 10px;
-    border:1px solid #ccc;
-    border-radius:8px;
+    padding:14px;
+    margin-bottom:16px;
+    border-radius:14px;
+    border:none;
     outline:none;
     font-size:14px;
-}
-.group label{
-    position:absolute;
-    top:50%;
-    left:10px;
-    color:#999;
-    font-size:14px;
-    transform:translateY(-50%);
-    pointer-events:none;
+    background: rgba(255,255,255,0.9);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
     transition:.3s;
-    background:#fff;
-    padding:0 5px;
 }
-.group input:focus + label,
-.group input:not(:placeholder-shown) + label{
-    top:-8px;
-    font-size:12px;
-    color:#667eea;
+
+input:focus{
+    box-shadow: inset 0 0 0 2px #b388ff;
 }
+
+/* BUTTON */
 button{
     width:100%;
-    padding:12px;
+    padding:14px;
     border:none;
-    border-radius:10px;
-    background: linear-gradient(135deg,#667eea,#764ba2);
-    color:white;
+    border-radius:16px;
+    background: linear-gradient(135deg,#a18cd1,#fbc2eb);
+    color:#fff;
     font-size:15px;
+    font-weight:600;
     cursor:pointer;
     transition:.3s;
 }
+
 button:hover{
-    opacity:.9;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow:0 12px 24px rgba(161,140,209,.4);
 }
-.user-box{
-    text-align:center;
-}
-.user-box h1{
-    margin-bottom:10px;
-    color:#333;
-}
-.role{
-    background:#f1f3ff;
-    padding:8px;
-    border-radius:8px;
+
+/* USER PAGE */
+#welcome{
     margin-bottom:20px;
-    color:#555;
-}
-@keyframes fadeIn{
-    from{opacity:0; transform:translateY(10px)}
-    to{opacity:1; transform:translateY(0)}
+    font-size:22px;
+    color:#333;
 }
 </style>
 </head>
@@ -99,80 +93,32 @@ button:hover{
 <body>
 
 <!-- LOGIN -->
-<div class="card" id="loginBox">
-    <h2>Welcome Back</h2>
-
-    <div class="group">
-        <input type="text" id="username" required placeholder=" ">
-        <label>Username</label>
-    </div>
-
-    <div class="group">
-        <input type="password" id="password" required placeholder=" ">
-        <label>Password</label>
-    </div>
-
+<div class="box" id="loginBox">
+    <h2>✨ Welcome Back</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
 </div>
 
-<!-- USER PAGE -->
-<div class="card user-box" id="userBox" style="display:none;">
-    <h1 id="welcomeText"></h1>
-    <div class="role">
-        Role: <b id="roleText"></b>
-    </div>
+<!-- USER -->
+<div class="box" id="userBox" style="display:none;">
+    <h2 id="welcome"></h2>
     <button onclick="logout()">Logout</button>
 </div>
 
 <script>
-/* DATABASE */
-if(!localStorage.getItem("users")){
-    const users = [
-        {username:"User", password:"User123", role:"User"},
-        {username:"Admin", password:"Admin", role:"Admin"},
-        {username:"Guest", password:"Guest", role:"Guest"}
-    ];
-    localStorage.setItem("users", JSON.stringify(users));
-}
-
-/* LOGIN */
-function login(){
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const users = JSON.parse(localStorage.getItem("users"));
-
-    const user = users.find(u => 
-        u.username === username && u.password === password
-    );
-
-    if(user){
-        localStorage.setItem("loginUser", JSON.stringify(user));
-        showUser(user);
-    }else{
-        alert("❌ Login gagal! Username atau password salah");
+// ===== CLASS USER (PBO) =====
+class User {
+    constructor(username, password) {
+        this.username = username;
+        this.password = password;
     }
 }
 
-/* SHOW USER */
-function showUser(user){
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("userBox").style.display="block";
-    document.getElementById("welcomeText").innerText = "Hai, " + user.username;
-    document.getElementById("roleText").innerText = user.role;
-}
-
-/* LOGOUT */
-function logout(){
-    localStorage.removeItem("loginUser");
-    location.reload();
-}
-
-/* AUTO LOGIN */
-const savedUser = JSON.parse(localStorage.getItem("loginUser"));
-if(savedUser){
-    showUser(savedUser);
-}
-</script>
-
-</body>
-</html>
+// ===== DATABASE (PBO) =====
+class Database {
+    static init() {
+        if (!localStorage.getItem("users")) {
+            const users = [
+                new User("admin", "123"),
+                new User("user1", "111"),
