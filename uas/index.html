@@ -1,181 +1,98 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Animated Login</title>
-
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-/* BACKGROUND ANIMATION */
-body{
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background: linear-gradient(270deg,#6a7cff,#7b5cff,#9b6bff);
-    background-size: 600% 600%;
-    animation: bgMove 10s ease infinite;
-}
-
-@keyframes bgMove{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-
-/* CARD */
-.card{
-    width:360px;
-    background:#fff;
-    border-radius:20px;
-    padding:40px 30px;
-    box-shadow:0 30px 60px rgba(0,0,0,.25);
-    animation: floatIn .8s ease;
-}
-
-@keyframes floatIn{
-    from{
-        opacity:0;
-        transform: translateY(30px) scale(.95);
-    }
-    to{
-        opacity:1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* TITLE */
-.card h2{
-    text-align:center;
-    margin-bottom:30px;
-    color:#222;
-}
-
-/* INPUT */
-.input-group{
-    margin-bottom:20px;
-}
-.input-group input{
-    width:100%;
-    padding:14px;
-    border-radius:12px;
-    border:1px solid #ddd;
-    font-size:14px;
-    outline:none;
-    transition:.3s;
-}
-.input-group input:focus{
-    border-color:#7b5cff;
-    box-shadow:0 0 0 3px rgba(123,92,255,.15);
-}
-
-/* BUTTON */
-button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:14px;
-    background: linear-gradient(135deg,#6a7cff,#9b6bff);
-    color:white;
-    font-size:15px;
-    cursor:pointer;
-    transition:.3s;
-}
-button:hover{
-    transform: translateY(-2px);
-    box-shadow:0 10px 20px rgba(0,0,0,.2);
-}
-
-/* USER PAGE */
-.user{
-    text-align:center;
-}
-.user h1{
-    margin-bottom:10px;
-}
-.role{
-    margin-bottom:25px;
-    color:#555;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>PBO Login LocalStorage</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+            padding: 50px;
+        }
+        .box {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: auto;
+            border-radius: 8px;
+            text-align: center;
+        }
+        input, button {
+            width: 90%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div class="card" id="loginBox">
-    <h2>Welcome Back</h2>
-
-    <div class="input-group">
-        <input type="text" id="username" placeholder="Username">
-    </div>
-
-    <div class="input-group">
-        <input type="password" id="password" placeholder="Password">
-    </div>
-
+<div class="box" id="loginBox">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
 </div>
 
-<!-- USER -->
-<div class="card user" id="userBox" style="display:none;">
-    <h1 id="welcomeText"></h1>
-    <div class="role">Role: <b id="roleText"></b></div>
+<div class="box" id="userBox" style="display:none;">
+    <h2 id="welcome"></h2>
     <button onclick="logout()">Logout</button>
 </div>
 
 <script>
-// DATABASE
-if(!localStorage.getItem("users")){
-    const users = [
-        {username:"User", password:"User123", role:"User"},
-        {username:"Admin", password:"Admin", role:"Admin"},
-        {username:"Guest", password:"Guest", role:"Guest"}
-    ];
-    localStorage.setItem("users", JSON.stringify(users));
-}
-
-// LOGIN
-function login(){
-    const u = username.value;
-    const p = password.value;
-    const users = JSON.parse(localStorage.getItem("users"));
-
-    const user = users.find(x => x.username === u && x.password === p);
-
-    if(user){
-        localStorage.setItem("loginUser", JSON.stringify(user));
-        showUser(user);
-    }else{
-        alert("❌ Login gagal!");
+// ===== CLASS USER (PBO) =====
+class User {
+    constructor(username, password) {
+        this.username = username;
+        this.password = password;
     }
 }
 
-// SHOW USER
-function showUser(user){
-    loginBox.style.display="none";
-    userBox.style.display="block";
-    welcomeText.innerText = "Hai, " + user.username;
-    roleText.innerText = user.role;
+// ===== DATABASE LOCALSTORAGE =====
+class Database {
+    static init() {
+        if (!localStorage.getItem("users")) {
+            const users = [
+                new User("admin", "123"),
+                new User("user1", "111"),
+                new User("user2", "222")
+            ];
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+    }
+
+    static getUsers() {
+        return JSON.parse(localStorage.getItem("users"));
+    }
 }
 
-// LOGOUT
-function logout(){
-    localStorage.removeItem("loginUser");
+// ===== LOGIN SYSTEM =====
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const users = Database.getUsers();
+    const found = users.find(
+        u => u.username === username && u.password === password
+    );
+
+    if (found) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("userBox").style.display = "block";
+        document.getElementById("welcome").innerText = `Hi ${found.username}`;
+    } else {
+        alert("Gagal Login!");
+    }
+}
+
+function logout() {
     location.reload();
 }
 
-// AUTO LOGIN
-const saved = JSON.parse(localStorage.getItem("loginUser"));
-if(saved){
-    showUser(saved);
-}
+// INIT DATABASE
+Database.init();
 </script>
 
 </body>
