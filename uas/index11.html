@@ -2,77 +2,64 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Animated Login</title>
+<title>PBO Login – Gen Z</title>
 
 <style>
 *{
-    margin:0;
-    padding:0;
     box-sizing:border-box;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
-/* BACKGROUND ANIMATION */
 body{
+    margin:0;
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    background: linear-gradient(270deg,#6a7cff,#7b5cff,#9b6bff);
-    background-size: 600% 600%;
-    animation: bgMove 10s ease infinite;
+    background: linear-gradient(120deg,#c2e9fb,#d4b6f5,#fbc2eb);
 }
 
-@keyframes bgMove{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-
-/* CARD */
-.card{
-    width:360px;
-    background:#fff;
+/* GLASS CARD */
+.box{
+    width:340px;
+    padding:32px;
     border-radius:20px;
-    padding:40px 30px;
-    box-shadow:0 30px 60px rgba(0,0,0,.25);
-    animation: floatIn .8s ease;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.15);
+    text-align:center;
+    animation: pop .6s ease;
 }
 
-@keyframes floatIn{
-    from{
-        opacity:0;
-        transform: translateY(30px) scale(.95);
-    }
-    to{
-        opacity:1;
-        transform: translateY(0) scale(1);
-    }
+@keyframes pop{
+    from{opacity:0; transform:scale(.95)}
+    to{opacity:1; transform:scale(1)}
 }
 
 /* TITLE */
-.card h2{
-    text-align:center;
-    margin-bottom:30px;
-    color:#222;
+h2{
+    margin-bottom:26px;
+    font-weight:600;
+    color:#333;
 }
 
 /* INPUT */
-.input-group{
-    margin-bottom:20px;
-}
-.input-group input{
+input{
     width:100%;
     padding:14px;
-    border-radius:12px;
-    border:1px solid #ddd;
-    font-size:14px;
+    margin-bottom:16px;
+    border-radius:14px;
+    border:none;
     outline:none;
+    font-size:14px;
+    background: rgba(255,255,255,0.9);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
     transition:.3s;
 }
-.input-group input:focus{
-    border-color:#7b5cff;
-    box-shadow:0 0 0 3px rgba(123,92,255,.15);
+
+input:focus{
+    box-shadow: inset 0 0 0 2px #b388ff;
 }
 
 /* BUTTON */
@@ -80,28 +67,25 @@ button{
     width:100%;
     padding:14px;
     border:none;
-    border-radius:14px;
-    background: linear-gradient(135deg,#6a7cff,#9b6bff);
-    color:white;
+    border-radius:16px;
+    background: linear-gradient(135deg,#a18cd1,#fbc2eb);
+    color:#fff;
     font-size:15px;
+    font-weight:600;
     cursor:pointer;
     transition:.3s;
 }
+
 button:hover{
     transform: translateY(-2px);
-    box-shadow:0 10px 20px rgba(0,0,0,.2);
+    box-shadow:0 12px 24px rgba(161,140,209,.4);
 }
 
 /* USER PAGE */
-.user{
-    text-align:center;
-}
-.user h1{
-    margin-bottom:10px;
-}
-.role{
-    margin-bottom:25px;
-    color:#555;
+#welcome{
+    margin-bottom:20px;
+    font-size:22px;
+    color:#333;
 }
 </style>
 </head>
@@ -109,73 +93,71 @@ button:hover{
 <body>
 
 <!-- LOGIN -->
-<div class="card" id="loginBox">
-    <h2>Welcome Back</h2>
-
-    <div class="input-group">
-        <input type="text" id="username" placeholder="Username">
-    </div>
-
-    <div class="input-group">
-        <input type="password" id="password" placeholder="Password">
-    </div>
-
+<div class="box" id="loginBox">
+    <h2>✨ Welcome Back</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
 </div>
 
 <!-- USER -->
-<div class="card user" id="userBox" style="display:none;">
-    <h1 id="welcomeText"></h1>
-    <div class="role">Role: <b id="roleText"></b></div>
+<div class="box" id="userBox" style="display:none;">
+    <h2 id="welcome"></h2>
     <button onclick="logout()">Logout</button>
 </div>
 
 <script>
-// DATABASE
-if(!localStorage.getItem("users")){
-    const users = [
-        {username:"User", password:"User123", role:"User"},
-        {username:"Admin", password:"Admin", role:"Admin"},
-        {username:"Guest", password:"Guest", role:"Guest"}
-    ];
-    localStorage.setItem("users", JSON.stringify(users));
+// ===== CLASS USER (PBO) =====
+class User {
+    constructor(username, password) {
+        this.username = username;
+        this.password = password;
+    }
 }
 
-// LOGIN
+// ===== DATABASE (PBO) =====
+class Database {
+    static init() {
+        if (!localStorage.getItem("users")) {
+            const users = [
+                new User("admin", "123"),
+                new User("user1", "111"),
+                new User("user2", "222")
+            ];
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+    }
+
+    static getUsers() {
+        return JSON.parse(localStorage.getItem("users"));
+    }
+}
+
+// ===== LOGIN SYSTEM =====
 function login(){
-    const u = username.value;
-    const p = password.value;
-    const users = JSON.parse(localStorage.getItem("users"));
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-    const user = users.find(x => x.username === u && x.password === p);
+    const users = Database.getUsers();
+    const found = users.find(
+        u => u.username === username && u.password === password
+    );
 
-    if(user){
-        localStorage.setItem("loginUser", JSON.stringify(user));
-        showUser(user);
+    if(found){
+        loginBox.style.display = "none";
+        userBox.style.display = "block";
+        welcome.innerText = "Hi, " + found.username + " 👋";
     }else{
         alert("❌ Login gagal!");
     }
 }
 
-// SHOW USER
-function showUser(user){
-    loginBox.style.display="none";
-    userBox.style.display="block";
-    welcomeText.innerText = "Hai, " + user.username;
-    roleText.innerText = user.role;
-}
-
-// LOGOUT
 function logout(){
-    localStorage.removeItem("loginUser");
     location.reload();
 }
 
-// AUTO LOGIN
-const saved = JSON.parse(localStorage.getItem("loginUser"));
-if(saved){
-    showUser(saved);
-}
+// INIT DATABASE
+Database.init();
 </script>
 
 </body>
