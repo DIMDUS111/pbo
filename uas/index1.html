@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Modern Login App</title>
+
+<style>
+*{
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+}
+.card{
+    background:#fff;
+    width:340px;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 20px 40px rgba(0,0,0,.2);
+    animation: fadeIn .6s ease;
+}
+h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#333;
+}
+.group{
+    position:relative;
+    margin-bottom:20px;
+}
+.group input{
+    width:100%;
+    padding:12px 10px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    outline:none;
+    font-size:14px;
+}
+.group label{
+    position:absolute;
+    top:50%;
+    left:10px;
+    color:#999;
+    font-size:14px;
+    transform:translateY(-50%);
+    pointer-events:none;
+    transition:.3s;
+    background:#fff;
+    padding:0 5px;
+}
+.group input:focus + label,
+.group input:not(:placeholder-shown) + label{
+    top:-8px;
+    font-size:12px;
+    color:#667eea;
+}
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+    font-size:15px;
+    cursor:pointer;
+    transition:.3s;
+}
+button:hover{
+    opacity:.9;
+    transform: translateY(-1px);
+}
+.user-box{
+    text-align:center;
+}
+.user-box h1{
+    margin-bottom:10px;
+    color:#333;
+}
+.role{
+    background:#f1f3ff;
+    padding:8px;
+    border-radius:8px;
+    margin-bottom:20px;
+    color:#555;
+}
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px)}
+    to{opacity:1; transform:translateY(0)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="card" id="loginBox">
+    <h2>Welcome Back</h2>
+
+    <div class="group">
+        <input type="text" id="username" required placeholder=" ">
+        <label>Username</label>
+    </div>
+
+    <div class="group">
+        <input type="password" id="password" required placeholder=" ">
+        <label>Password</label>
+    </div>
+
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- USER PAGE -->
+<div class="card user-box" id="userBox" style="display:none;">
+    <h1 id="welcomeText"></h1>
+    <div class="role">
+        Role: <b id="roleText"></b>
+    </div>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+/* DATABASE */
+if(!localStorage.getItem("users")){
+    const users = [
+        {username:"User", password:"User123", role:"User"},
+        {username:"Admin", password:"Admin", role:"Admin"},
+        {username:"Guest", password:"Guest", role:"Guest"}
+    ];
+    localStorage.setItem("users", JSON.stringify(users));
+}
+
+/* LOGIN */
+function login(){
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const users = JSON.parse(localStorage.getItem("users"));
+
+    const user = users.find(u => 
+        u.username === username && u.password === password
+    );
+
+    if(user){
+        localStorage.setItem("loginUser", JSON.stringify(user));
+        showUser(user);
+    }else{
+        alert("❌ Login gagal! Username atau password salah");
+    }
+}
+
+/* SHOW USER */
+function showUser(user){
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("userBox").style.display="block";
+    document.getElementById("welcomeText").innerText = "Hai, " + user.username;
+    document.getElementById("roleText").innerText = user.role;
+}
+
+/* LOGOUT */
+function logout(){
+    localStorage.removeItem("loginUser");
+    location.reload();
+}
+
+/* AUTO LOGIN */
+const savedUser = JSON.parse(localStorage.getItem("loginUser"));
+if(savedUser){
+    showUser(savedUser);
+}
+</script>
+
+</body>
+</html>
