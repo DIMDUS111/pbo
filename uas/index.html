@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Login App</title>
+<title>Animated Login</title>
 <style>
 * {
   box-sizing: border-box;
@@ -18,19 +18,19 @@ body {
   align-items: center;
 }
 
+/* CARD */
 .card {
   background: #fff;
   width: 340px;
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 20px 40px rgba(0,0,0,.25);
-  animation: fadeIn .6s ease;
+  animation: slideIn .7s ease;
 }
 
 h2 {
   text-align: center;
   margin-bottom: 25px;
-  color: #333;
 }
 
 input {
@@ -40,11 +40,12 @@ input {
   border-radius: 8px;
   border: 1px solid #ccc;
   outline: none;
-  font-size: 14px;
+  transition: .3s;
 }
 
 input:focus {
   border-color: #667eea;
+  box-shadow: 0 0 5px rgba(102,126,234,.5);
 }
 
 button {
@@ -56,28 +57,43 @@ button {
   border-radius: 8px;
   font-size: 15px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: .3s;
 }
 
 button:hover {
   background: #5563d6;
+  transform: translateY(-2px);
 }
 
-#welcome {
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-@keyframes fadeIn {
+/* ANIMATIONS */
+@keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake .4s;
+}
+
+/* USER PAGE */
+#welcome {
+  font-size: 22px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 </style>
 </head>
@@ -85,13 +101,13 @@ button:hover {
 
 <!-- LOGIN -->
 <div class="card" id="loginBox">
-  <h2>Login User</h2>
+  <h2>Login</h2>
   <input type="text" id="username" placeholder="Username">
   <input type="password" id="password" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
-<!-- HALAMAN USER -->
+<!-- USER -->
 <div class="card" id="userBox" style="display:none;">
   <h2 id="welcome"></h2>
   <button onclick="logout()">Logout</button>
@@ -113,16 +129,17 @@ function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
   const users = JSON.parse(localStorage.getItem("users"));
+  const card = document.getElementById("loginBox");
 
-  const found = users.find(u => 
-    u.username === username && u.password === password
-  );
+  const user = users.find(u => u.username === username && u.password === password);
 
-  if (found) {
-    document.getElementById("loginBox").style.display = "none";
+  if (user) {
+    card.style.display = "none";
     document.getElementById("userBox").style.display = "block";
-    document.getElementById("welcome").innerText = "Hi, " + found.username + " 👋";
+    document.getElementById("welcome").innerText = "Hi, " + user.username + " 👋";
   } else {
+    card.classList.add("shake");
+    setTimeout(() => card.classList.remove("shake"), 400);
     alert("Gagal login!");
   }
 }
