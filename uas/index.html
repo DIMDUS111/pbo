@@ -3,150 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <title>Animated Login</title>
+
 <style>
-* {
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-body {
-  margin: 0;
-  height: 100vh;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* BACKGROUND ANIMATION */
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(270deg,#6a7cff,#7b5cff,#9b6bff);
+    background-size: 600% 600%;
+    animation: bgMove 10s ease infinite;
+}
+
+@keyframes bgMove{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
 }
 
 /* CARD */
-.card {
-  background: #fff;
-  width: 340px;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 20px 40px rgba(0,0,0,.25);
-  animation: slideIn .7s ease;
+.card{
+    width:360px;
+    background:#fff;
+    border-radius:20px;
+    padding:40px 30px;
+    box-shadow:0 30px 60px rgba(0,0,0,.25);
+    animation: floatIn .8s ease;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 25px;
+@keyframes floatIn{
+    from{
+        opacity:0;
+        transform: translateY(30px) scale(.95);
+    }
+    to{
+        opacity:1;
+        transform: translateY(0) scale(1);
+    }
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  outline: none;
-  transition: .3s;
+/* TITLE */
+.card h2{
+    text-align:center;
+    margin-bottom:30px;
+    color:#222;
 }
 
-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 5px rgba(102,126,234,.5);
+/* INPUT */
+.input-group{
+    margin-bottom:20px;
+}
+.input-group input{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #ddd;
+    font-size:14px;
+    outline:none;
+    transition:.3s;
+}
+.input-group input:focus{
+    border-color:#7b5cff;
+    box-shadow:0 0 0 3px rgba(123,92,255,.15);
 }
 
-button {
-  width: 100%;
-  padding: 12px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  cursor: pointer;
-  transition: .3s;
+/* BUTTON */
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background: linear-gradient(135deg,#6a7cff,#9b6bff);
+    color:white;
+    font-size:15px;
+    cursor:pointer;
+    transition:.3s;
 }
-
-button:hover {
-  background: #5563d6;
-  transform: translateY(-2px);
-}
-
-/* ANIMATIONS */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
-}
-
-.shake {
-  animation: shake .4s;
+button:hover{
+    transform: translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,0,0,.2);
 }
 
 /* USER PAGE */
-#welcome {
-  font-size: 22px;
-  margin-bottom: 20px;
-  text-align: center;
+.user{
+    text-align:center;
+}
+.user h1{
+    margin-bottom:10px;
+}
+.role{
+    margin-bottom:25px;
+    color:#555;
 }
 </style>
 </head>
+
 <body>
 
 <!-- LOGIN -->
 <div class="card" id="loginBox">
-  <h2>Login</h2>
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
+    <h2>Welcome Back</h2>
+
+    <div class="input-group">
+        <input type="text" id="username" placeholder="Username">
+    </div>
+
+    <div class="input-group">
+        <input type="password" id="password" placeholder="Password">
+    </div>
+
+    <button onclick="login()">Login</button>
 </div>
 
 <!-- USER -->
-<div class="card" id="userBox" style="display:none;">
-  <h2 id="welcome"></h2>
-  <button onclick="logout()">Logout</button>
+<div class="card user" id="userBox" style="display:none;">
+    <h1 id="welcomeText"></h1>
+    <div class="role">Role: <b id="roleText"></b></div>
+    <button onclick="logout()">Logout</button>
 </div>
 
 <script>
 // DATABASE
-if (!localStorage.getItem("users")) {
-  const users = [
-    { username: "user1", password: "123" },
-    { username: "user2", password: "456" },
-    { username: "user3", password: "789" }
-  ];
-  localStorage.setItem("users", JSON.stringify(users));
+if(!localStorage.getItem("users")){
+    const users = [
+        {username:"User", password:"User123", role:"User"},
+        {username:"Admin", password:"Admin", role:"Admin"},
+        {username:"Guest", password:"Guest", role:"Guest"}
+    ];
+    localStorage.setItem("users", JSON.stringify(users));
 }
 
 // LOGIN
-function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const users = JSON.parse(localStorage.getItem("users"));
-  const card = document.getElementById("loginBox");
+function login(){
+    const u = username.value;
+    const p = password.value;
+    const users = JSON.parse(localStorage.getItem("users"));
 
-  const user = users.find(u => u.username === username && u.password === password);
+    const user = users.find(x => x.username === u && x.password === p);
 
-  if (user) {
-    card.style.display = "none";
-    document.getElementById("userBox").style.display = "block";
-    document.getElementById("welcome").innerText = "Hi, " + user.username + " 👋";
-  } else {
-    card.classList.add("shake");
-    setTimeout(() => card.classList.remove("shake"), 400);
-    alert("Gagal login!");
-  }
+    if(user){
+        localStorage.setItem("loginUser", JSON.stringify(user));
+        showUser(user);
+    }else{
+        alert("❌ Login gagal!");
+    }
+}
+
+// SHOW USER
+function showUser(user){
+    loginBox.style.display="none";
+    userBox.style.display="block";
+    welcomeText.innerText = "Hai, " + user.username;
+    roleText.innerText = user.role;
 }
 
 // LOGOUT
-function logout() {
-  location.reload();
+function logout(){
+    localStorage.removeItem("loginUser");
+    location.reload();
+}
+
+// AUTO LOGIN
+const saved = JSON.parse(localStorage.getItem("loginUser"));
+if(saved){
+    showUser(saved);
 }
 </script>
 
