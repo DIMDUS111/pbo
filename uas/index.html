@@ -1,41 +1,118 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>PBO Login LocalStorage</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: #f2f2f2;
-            padding: 50px;
-        }
-        .box {
-            background: white;
-            padding: 20px;
-            width: 300px;
-            margin: auto;
-            border-radius: 8px;
-            text-align: center;
-        }
-        input, button {
-            width: 90%;
-            padding: 8px;
-            margin: 5px 0;
-        }
-        button {
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>PBO Login – Ocean Theme</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    font-family:'Poppins','Segoe UI',sans-serif;
+}
+
+/* BACKGROUND LAUTAN */
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        linear-gradient(to bottom, rgba(0,40,70,.7), rgba(0,10,30,.9)),
+        url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
+    background-size:cover;
+    background-position:center;
+    overflow:hidden;
+}
+
+/* CARD OCEAN */
+.box{
+    width:350px;
+    padding:32px;
+    text-align:center;
+
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border-radius:24px;
+    border:2px solid rgba(255,255,255,0.35);
+
+    box-shadow:
+        0 0 25px rgba(0,180,255,.4),
+        0 0 50px rgba(0,120,255,.25);
+
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-10px)}
+}
+
+/* TITLE */
+h2{
+    color:#eafaff;
+    margin-bottom:26px;
+    font-weight:600;
+    letter-spacing:1px;
+}
+
+/* INPUT */
+input{
+    width:100%;
+    padding:14px;
+    margin-bottom:16px;
+    border-radius:14px;
+    border:none;
+    outline:none;
+    font-size:14px;
+    background: rgba(255,255,255,0.9);
+}
+
+input:focus{
+    box-shadow:0 0 0 3px rgba(0,200,255,.6);
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:18px;
+    background: linear-gradient(135deg,#00c6ff,#0072ff);
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform: translateY(-2px);
+    box-shadow:0 12px 28px rgba(0,160,255,.6);
+}
+
+/* USER PAGE */
+#welcome{
+    margin-bottom:22px;
+    color:#eafaff;
+    font-size:22px;
+}
+</style>
 </head>
+
 <body>
 
+<!-- LOGIN -->
 <div class="box" id="loginBox">
-    <h2>Login</h2>
+    <h2>🌊 Ocean Login</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
+    <button onclick="login()">Dive In 🌊</button>
 </div>
 
+<!-- USER -->
 <div class="box" id="userBox" style="display:none;">
     <h2 id="welcome"></h2>
     <button onclick="logout()">Logout</button>
@@ -50,18 +127,17 @@ class User {
     }
 }
 
-// ===== DATABASE LOCALSTORAGE =====
+// ===== DATABASE (LOCALSTORAGE) =====
 class Database {
-    static init() {
-        if (!localStorage.getItem("users")) {
-            const users = [
-                new User("admin", "123"),
-                new User("user1", "111"),
-                new User("user2", "222")
-            ];
-            localStorage.setItem("users", JSON.stringify(users));
-        }
-    }
+ static init() {
+    const users = [
+        new User("admin", "123"),
+        new User("user1", "111"),
+        new User("user2", "222")
+    ];
+    localStorage.setItem("users", JSON.stringify(users));
+}
+
 
     static getUsers() {
         return JSON.parse(localStorage.getItem("users"));
@@ -69,7 +145,7 @@ class Database {
 }
 
 // ===== LOGIN SYSTEM =====
-function login() {
+function login(){
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
@@ -78,16 +154,16 @@ function login() {
         u => u.username === username && u.password === password
     );
 
-    if (found) {
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("userBox").style.display = "block";
-        document.getElementById("welcome").innerText = `Hi ${found.username}`;
-    } else {
-        alert("Gagal Login!");
+    if(found){
+        loginBox.style.display="none";
+        userBox.style.display="block";
+        welcome.innerText = "🐋 Welcome, " + found.username;
+    }else{
+        alert("❌ Login gagal!");
     }
 }
 
-function logout() {
+function logout(){
     location.reload();
 }
 
