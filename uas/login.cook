@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>PBO Login LocalStorage</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+            padding: 50px;
+        }
+        .box {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: auto;
+            border-radius: 8px;
+            text-align: center;
+        }
+        input, button {
+            width: 90%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box" id="loginBox">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+</div>
+
+<div class="box" id="userBox" style="display:none;">
+    <h2 id="welcome"></h2>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+// ===== CLASS USER (PBO) =====
+class User {
+    constructor(username, password) {
+        this.username = username;
+        this.password = password;
+    }
+}
+
+// ===== DATABASE LOCALSTORAGE =====
+class Database {
+    static init() {
+        if (!localStorage.getItem("users")) {
+            const users = [
+                new User("admin", "123"),
+                new User("user1", "111"),
+                new User("user2", "222")
+            ];
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+    }
+
+    static getUsers() {
+        return JSON.parse(localStorage.getItem("users"));
+    }
+}
+
+// ===== LOGIN SYSTEM =====
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const users = Database.getUsers();
+    const found = users.find(
+        u => u.username === username && u.password === password
+    );
+
+    if (found) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("userBox").style.display = "block";
+        document.getElementById("welcome").innerText = `Hi ${found.username}`;
+    } else {
+        alert("Gagal Login!");
+    }
+}
+
+function logout() {
+    location.reload();
+}
+
+// INIT DATABASE
+Database.init();
+</script>
+
+</body>
+</html>
