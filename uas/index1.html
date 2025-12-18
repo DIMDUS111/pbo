@@ -2,123 +2,265 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>PBO Login – Gen Z</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Dynamics</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
+
 *{
+    margin:0;
+    padding:0;
     box-sizing:border-box;
-    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    user-select:none;
 }
 
 body{
-    margin:0;
-    height:100vh;
+    background:#050505;
+    font-family:'Rajdhani',sans-serif;
+    overflow:hidden;
+    color:white;
+}
+
+#container{
+    position:fixed;
+    inset:0;
+    z-index:1;
+}
+
+/* GLASS UI */
+.glassmorphic{
+    background:linear-gradient(145deg,rgba(20,10,5,.8),rgba(10,5,2,.6));
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,100,50,.2);
+    box-shadow:0 10px 40px rgba(0,0,0,.8);
+    border-radius:12px;
+}
+
+/* CONTROL PANEL */
+.controls{
+    position:fixed;
+    bottom:40px;
+    left:40px;
+    width:300px;
+    padding:24px;
+    z-index:10;
+    transition:.4s;
+}
+
+.controls.minimized{
+    max-height:60px;
+    overflow:hidden;
+}
+
+.controls h3{
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:18px;
+    margin-bottom:4px;
+}
+
+.status-text{
+    font-size:10px;
+    color:#ffaa00;
+    letter-spacing:2px;
+}
+
+.controls-header{
     display:flex;
-    justify-content:center;
+    justify-content:space-between;
     align-items:center;
-    background: linear-gradient(120deg,#c2e9fb,#d4b6f5,#fbc2eb);
-}
-
-/* GLASS CARD */
-.box{
-    width:340px;
-    padding:32px;
-    border-radius:20px;
-    background: rgba(255,255,255,0.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 20px 40px rgba(0,0,0,.15);
-    text-align:center;
-    animation: pop .6s ease;
-}
-
-@keyframes pop{
-    from{opacity:0; transform:scale(.95)}
-    to{opacity:1; transform:scale(1)}
-}
-
-/* TITLE */
-h2{
-    margin-bottom:26px;
-    font-weight:600;
-    color:#333;
-}
-
-/* INPUT */
-input{
-    width:100%;
-    padding:14px;
     margin-bottom:16px;
-    border-radius:14px;
-    border:none;
-    outline:none;
-    font-size:14px;
-    background: rgba(255,255,255,0.9);
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
-    transition:.3s;
 }
 
-input:focus{
-    box-shadow: inset 0 0 0 2px #b388ff;
-}
-
-/* BUTTON */
-button{
-    width:100%;
-    padding:14px;
+.toggle-btn{
+    width:24px;
+    height:24px;
+    background:rgba(255,255,255,.1);
     border:none;
-    border-radius:16px;
-    background: linear-gradient(135deg,#a18cd1,#fbc2eb);
-    color:#fff;
-    font-size:15px;
-    font-weight:600;
+    color:white;
     cursor:pointer;
-    transition:.3s;
 }
 
-button:hover{
-    transform: translateY(-2px);
-    box-shadow:0 12px 24px rgba(161,140,209,.4);
+.control-group{
+    margin-bottom:18px;
 }
 
-/* USER PAGE */
-#welcome{
-    margin-bottom:20px;
-    font-size:22px;
-    color:#333;
+.control-group label{
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    display:flex;
+    justify-content:space-between;
+}
+
+input[type=range]{
+    width:100%;
+}
+
+/* THEME */
+.theme-selector{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    margin-top:16px;
+}
+
+.theme-btn{
+    width:36px;
+    height:36px;
+    border:none;
+    cursor:pointer;
+    transform:rotate(45deg);
+}
+
+.theme-helios{background:linear-gradient(135deg,#ffaa00,#ff4400)}
+.theme-neutron{background:linear-gradient(135deg,#00ffff,#0088ff)}
+.theme-crimson{background:linear-gradient(135deg,#ff0000,#550000)}
+
+.info{
+    position:fixed;
+    bottom:40px;
+    right:40px;
+    font-size:11px;
+    opacity:.6;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div class="box" id="loginBox">
-    <h2>✨ Welcome Back</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
+<div id="container"></div>
+
+<div class="controls glassmorphic" id="panel">
+    <div class="controls-header">
+        <div>
+            <h3>Solar Dynamics</h3>
+            <div class="status-text">Fusion Stable</div>
+        </div>
+        <button class="toggle-btn" id="toggle">▼</button>
+    </div>
+
+    <div class="control-group">
+        <label>Surface Heat <span id="heatVal">1.0</span></label>
+        <input type="range" min="0" max="200" value="100" id="heat">
+    </div>
+
+    <div class="control-group">
+        <label>Magnetic Flux <span id="fluxVal">0.8</span></label>
+        <input type="range" min="0" max="100" value="80" id="flux">
+    </div>
+
+    <div class="control-group">
+        <label>Glass Opacity <span id="coronaVal">0.6</span></label>
+        <input type="range" min="0" max="100" value="60" id="corona">
+    </div>
+
+    <div class="theme-selector">
+        <button class="theme-btn theme-helios" onclick="setTheme('helios')"></button>
+        <button class="theme-btn theme-neutron" onclick="setTheme('neutron')"></button>
+        <button class="theme-btn theme-crimson" onclick="setTheme('crimson')"></button>
+    </div>
 </div>
 
-<!-- USER -->
-<div class="box" id="userBox" style="display:none;">
-    <h2 id="welcome"></h2>
-    <button onclick="logout()">Logout</button>
-</div>
+<div class="info">Click Star Surface to Eject Mass</div>
 
-<script>
-// ===== CLASS USER (PBO) =====
-class User {
-    constructor(username, password) {
-        this.username = username;
-        this.password = password;
-    }
+<script type="module">
+import * as THREE from "https://esm.sh/three";
+import { OrbitControls } from "https://esm.sh/three/examples/jsm/controls/OrbitControls.js";
+import { EffectComposer } from "https://esm.sh/three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "https://esm.sh/three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "https://esm.sh/three/examples/jsm/postprocessing/UnrealBloomPass.js";
+
+/* BASIC SCENE */
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,100);
+camera.position.z = 5;
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+document.getElementById("container").appendChild(renderer.domElement);
+
+/* CONTROLS */
+const controls = new OrbitControls(camera,renderer.domElement);
+controls.enableDamping = true;
+
+/* BLOOM */
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+composer.addPass(new UnrealBloomPass(
+    new THREE.Vector2(innerWidth,innerHeight),
+    1.5,.4,.1
+));
+
+/* SUN */
+const sun = new THREE.Mesh(
+    new THREE.SphereGeometry(1.8,64,64),
+    new THREE.MeshStandardMaterial({
+        emissive:new THREE.Color(0xffaa00),
+        emissiveIntensity:2,
+        color:0x220800
+    })
+);
+scene.add(sun);
+
+scene.add(new THREE.AmbientLight(0xffffff,.3));
+const light = new THREE.PointLight(0xffaa00,3,50);
+scene.add(light);
+
+/* THEMES */
+const themes={
+ helios:{bg:0x050200,color:0xffaa00},
+ neutron:{bg:0x000205,color:0x00ffff},
+ crimson:{bg:0x000000,color:0xff0000}
+};
+
+window.setTheme=(t)=>{
+ scene.background=new THREE.Color(themes[t].bg);
+ sun.material.emissive.set(themes[t].color);
+ light.color.set(themes[t].color);
+};
+
+setTheme("helios");
+
+/* UI */
+heat.oninput=e=>{
+ sun.material.emissiveIntensity=e.target.value/50;
+ heatVal.innerText=(e.target.value/100).toFixed(1);
+};
+
+flux.oninput=e=>{
+ sun.scale.setScalar(1+e.target.value/300);
+ fluxVal.innerText=(e.target.value/100).toFixed(1);
+};
+
+corona.oninput=e=>{
+ sun.material.opacity=e.target.value/100;
+ coronaVal.innerText=(e.target.value/100).toFixed(1);
+};
+
+/* TOGGLE */
+toggle.onclick=()=>panel.classList.toggle("minimized");
+
+/* RESIZE */
+addEventListener("resize",()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+ composer.setSize(innerWidth,innerHeight);
+});
+
+/* ANIMATE */
+const clock=new THREE.Clock();
+function animate(){
+ requestAnimationFrame(animate);
+ sun.rotation.y+=.002;
+ controls.update();
+ composer.render();
 }
+animate();
+</script>
 
-// ===== DATABASE (PBO) =====
-class Database {
-    static init() {
-        if (!localStorage.getItem("users")) {
-            const users = [
-                new User("admin", "123"),
-                new User("user1", "111"),
+</body>
+</html>
