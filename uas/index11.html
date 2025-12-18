@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>PBO Login – Gen Z</title>
+<title>PBO Login – Space Theme</title>
 
 <style>
 *{
@@ -10,38 +10,68 @@
     font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
+/* BACKGROUND ANGKASA */
 body{
     margin:0;
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    background: linear-gradient(120deg,#c2e9fb,#d4b6f5,#fbc2eb);
+    background:
+        radial-gradient(circle at top, #2b1055, #000000),
+        url("https://images.unsplash.com/photo-1446776811953-b23d57bd21aa");
+    background-size: cover;
+    background-position: center;
+    overflow:hidden;
 }
 
-/* GLASS CARD */
+/* CARD SPACE */
 .box{
-    width:340px;
+    width:350px;
     padding:32px;
-    border-radius:20px;
-    background: rgba(255,255,255,0.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 20px 40px rgba(0,0,0,.15);
     text-align:center;
-    animation: pop .6s ease;
+
+    /* GLASS */
+    background: rgba(10,10,30,0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    /* BORDER IMAGE ANGKASA */
+    border: 3px solid transparent;
+    border-radius:22px;
+    background-clip: padding-box;
+
+    position: relative;
+    box-shadow:
+        0 0 30px rgba(140,120,255,.6),
+        0 0 60px rgba(80,100,255,.3);
+
+    animation: float 6s ease-in-out infinite;
 }
 
-@keyframes pop{
-    from{opacity:0; transform:scale(.95)}
-    to{opacity:1; transform:scale(1)}
+/* BORDER IMAGE EFFECT */
+.box::before{
+    content:"";
+    position:absolute;
+    inset:-3px;
+    border-radius:22px;
+    background:
+        linear-gradient(120deg,#7f7cff,#c77dff,#4ea8de,#7f7cff);
+    z-index:-1;
+    filter: blur(2px);
+}
+
+@keyframes float{
+    0%,100%{transform: translateY(0)}
+    50%{transform: translateY(-8px)}
 }
 
 /* TITLE */
 h2{
+    color:#fff;
     margin-bottom:26px;
     font-weight:600;
-    color:#333;
+    letter-spacing:1px;
 }
 
 /* INPUT */
@@ -53,13 +83,11 @@ input{
     border:none;
     outline:none;
     font-size:14px;
-    background: rgba(255,255,255,0.9);
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
-    transition:.3s;
+    background: rgba(255,255,255,.9);
 }
 
 input:focus{
-    box-shadow: inset 0 0 0 2px #b388ff;
+    box-shadow:0 0 0 3px rgba(160,140,255,.6);
 }
 
 /* BUTTON */
@@ -68,8 +96,8 @@ button{
     padding:14px;
     border:none;
     border-radius:16px;
-    background: linear-gradient(135deg,#a18cd1,#fbc2eb);
-    color:#fff;
+    background: linear-gradient(135deg,#7f7cff,#c77dff);
+    color:white;
     font-size:15px;
     font-weight:600;
     cursor:pointer;
@@ -78,14 +106,14 @@ button{
 
 button:hover{
     transform: translateY(-2px);
-    box-shadow:0 12px 24px rgba(161,140,209,.4);
+    box-shadow:0 12px 25px rgba(150,120,255,.6);
 }
 
 /* USER PAGE */
 #welcome{
-    margin-bottom:20px;
+    margin-bottom:22px;
+    color:#fff;
     font-size:22px;
-    color:#333;
 }
 </style>
 </head>
@@ -94,10 +122,10 @@ button:hover{
 
 <!-- LOGIN -->
 <div class="box" id="loginBox">
-    <h2>✨ Welcome Back</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
+    <h2>🚀 Space Login</h2>
+    <input type="text" id="username" placeholder="Astronaut ID">
+    <input type="password" id="password" placeholder="Access Code">
+    <button onclick="login()">Launch 🚀</button>
 </div>
 
 <!-- USER -->
@@ -115,7 +143,7 @@ class User {
     }
 }
 
-// ===== DATABASE (PBO) =====
+// ===== DATABASE (LOCALSTORAGE) =====
 class Database {
     static init() {
         if (!localStorage.getItem("users")) {
@@ -146,9 +174,9 @@ function login(){
     if(found){
         loginBox.style.display = "none";
         userBox.style.display = "block";
-        welcome.innerText = "Hi, " + found.username + " 👋";
+        welcome.innerText = "👨‍🚀 Welcome, " + found.username;
     }else{
-        alert("❌ Login gagal!");
+        alert("❌ Access Denied!");
     }
 }
 
