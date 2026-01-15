@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>PBO Login – Ocean Theme</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    font-family:'Poppins','Segoe UI',sans-serif;
+}
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        linear-gradient(to bottom, rgba(0,40,70,.7), rgba(0,10,30,.9)),
+        url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
+    background-size:cover;
+    background-position:center;
+}
+.box{
+    width:350px;
+    padding:32px;
+    text-align:center;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    border-radius:24px;
+    border:2px solid rgba(255,255,255,0.35);
+}
+input{
+    width:100%;
+    padding:14px;
+    margin-bottom:16px;
+    border-radius:14px;
+    border:none;
+}
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:18px;
+    background: linear-gradient(135deg,#00c6ff,#0072ff);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+#welcome{
+    font-size:22px;
+    color:white;
+    margin-bottom:20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="box" id="loginBox">
+    <h2>🌊 Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="Auth.login()">Login</button>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="box" id="profileBox" style="display:none;">
+    <h2>👤 Profil</h2>
+    <div id="welcome"></div>
+    <button onclick="Auth.logout()">Logout</button>
+</div>
+
+<script>
+// ===== CLASS USER =====
+class User {
+    constructor(username, password){
+        this.username = username;
+        this.password = password;
+    }
+}
+
+// ===== DATABASE CLASS =====
+class Database {
+    static init(){
+        if(!localStorage.getItem("users")){
+            const users = [
+                new User("admin","123"),
+                new User("user1","111"),
+                new User("user2","222")
+            ];
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+    }
+    static getUsers(){
+        return JSON.parse(localStorage.getItem("users"));
+    }
+}
+
+// ===== AUTH CLASS =====
+class Auth {
+    static login(){
+        const u = username.value;
+        const p = password.value;
+
+        const users = Database.getUsers();
+        const found = users.find(user => user.username === u && user.password === p);
+
+        if(found){
+            localStorage.setItem("loginUser", found.username);
+            Auth.showProfile(found.username);
+        }else{
+            alert("Login gagal!");
+        }
+    }
+
+    static showProfile(username){
+        loginBox.style.display="none";
+        profileBox.style.display="block";
+        welcome.innerText = "Username: " + username;
+    }
+
+    static logout(){
+        localStorage.removeItem("loginUser");
+        profileBox.style.display="none";
+        loginBox.style.display="block";
+    }
+}
+
+// ===== INIT =====
+Database.init();
+
+// AUTO REDIRECT JIKA SUDAH LOGIN
+const loggedUser = localStorage.getItem("loginUser");
+if(loggedUser){
+    Auth.showProfile(loggedUser);
+}
+</script>
+
+</body>
+</html>
