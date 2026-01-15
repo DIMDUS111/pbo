@@ -22,15 +22,15 @@ body{
     background-position:center;
 }
 
-/* PAGE WRAPPER */
+/* PAGES */
 .pages{
     width:200%;
     height:100%;
     display:flex;
-    transition:transform .8s ease;
+    transition:transform .8s ease-in-out;
 }
 
-/* EACH PAGE */
+/* PAGE */
 .page{
     width:50%;
     height:100%;
@@ -41,9 +41,8 @@ body{
 
 /* CARD */
 .box{
-    width:360px;
+    width:380px;
     padding:32px;
-    text-align:center;
     background: rgba(255,255,255,0.18);
     backdrop-filter: blur(14px);
     border-radius:24px;
@@ -56,7 +55,11 @@ body{
     50%{transform:translateY(-10px)}
 }
 
-h2{color:#eafaff;}
+h2{
+    color:#eafaff;
+    text-align:center;
+}
+
 input{
     width:100%;
     padding:14px;
@@ -64,6 +67,7 @@ input{
     border-radius:14px;
     border:none;
 }
+
 button{
     width:100%;
     padding:14px;
@@ -73,10 +77,11 @@ button{
     color:white;
     font-weight:600;
 }
+
 .profile p{
     color:white;
-    text-align:left;
-    margin:8px 0;
+    margin:10px 0;
+    font-size:15px;
 }
 </style>
 </head>
@@ -85,17 +90,17 @@ button{
 
 <div class="pages" id="pages">
 
-    <!-- LOGIN PAGE -->
+    <!-- LOGIN -->
     <div class="page">
         <div class="box">
             <h2>🌊 Login</h2>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
+            <input id="username" placeholder="Username">
+            <input id="password" type="password" placeholder="Password">
             <button onclick="Auth.login()">Login</button>
         </div>
     </div>
 
-    <!-- PROFILE PAGE -->
+    <!-- PROFILE -->
     <div class="page">
         <div class="box">
             <h2 id="profileTitle"></h2>
@@ -107,13 +112,13 @@ button{
 </div>
 
 <script>
-// ===== CLASS USER =====
+// ===== USER CLASS =====
 class User{
-    constructor(username,password,role,data){
+    constructor(username,password,role,profile){
         this.username = username;
         this.password = password;
         this.role = role;
-        this.data = data;
+        this.profile = profile;
     }
 }
 
@@ -122,13 +127,27 @@ class Database{
     static init(){
         if(!localStorage.getItem("users")){
             const users = [
-                new User("admin","123","admin",{namaDosen:"Pak Wawan"}),
-                new User("andi","111","user",{nama:"Andi",umur:21,jurusan:"Informatika"}),
-                new User("budi","111","user",{nama:"Budi",umur:22,jurusan:"Sistem Informasi"})
+                new User("admin","123","admin",{
+                    namaDosen:"Pak Wawan",
+                    prodi:"Teknik Informatika"
+                }),
+                new User("andi","111","user",{
+                    nama:"Andi",
+                    umur:21,
+                    jurusan:"Informatika",
+                    prodi:"S1 Informatika"
+                }),
+                new User("budi","111","user",{
+                    nama:"Budi",
+                    umur:22,
+                    jurusan:"Sistem Informasi",
+                    prodi:"S1 Sistem Informasi"
+                })
             ];
             localStorage.setItem("users", JSON.stringify(users));
         }
     }
+
     static getUsers(){
         return JSON.parse(localStorage.getItem("users"));
     }
@@ -143,29 +162,32 @@ class Auth{
         const user = Database.getUsers()
             .find(x => x.username === u && x.password === p);
 
-        if(user){
-            localStorage.setItem("loginUser", JSON.stringify(user));
-            Auth.showProfile(user);
-        }else{
+        if(!user){
             alert("Login gagal!");
+            return;
         }
+
+        localStorage.setItem("loginUser", JSON.stringify(user));
+        Auth.showProfile(user);
     }
 
     static showProfile(user){
         pages.style.transform = "translateX(-50%)";
-
         profileContent.innerHTML = "";
+
         if(user.role === "admin"){
             profileTitle.innerText = "👨‍🏫 Profil Dosen";
             profileContent.innerHTML = `
-                <p><b>Nama Dosen:</b> ${user.data.namaDosen}</p>
+                <p><b>Nama Dosen:</b> ${user.profile.namaDosen}</p>
+                <p><b>Program Studi:</b> ${user.profile.prodi}</p>
             `;
         }else{
             profileTitle.innerText = "👤 Profil Mahasiswa";
             profileContent.innerHTML = `
-                <p><b>Nama:</b> ${user.data.nama}</p>
-                <p><b>Umur:</b> ${user.data.umur}</p>
-                <p><b>Jurusan:</b> ${user.data.jurusan}</p>
+                <p><b>Nama:</b> ${user.profile.nama}</p>
+                <p><b>Umur:</b> ${user.profile.umur} tahun</p>
+                <p><b>Jurusan:</b> ${user.profile.jurusan}</p>
+                <p><b>Program Studi:</b> ${user.profile.prodi}</p>
             `;
         }
     }
