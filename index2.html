@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>PBO Login – Ocean Theme</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    font-family:'Poppins','Segoe UI',sans-serif;
+}
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        linear-gradient(to bottom, rgba(0,40,70,.7), rgba(0,10,30,.9)),
+        url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
+    background-size:cover;
+    background-position:center;
+}
+.box{
+    width:360px;
+    padding:32px;
+    text-align:center;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    border-radius:24px;
+    border:2px solid rgba(255,255,255,0.35);
+}
+h2{
+    color:#eafaff;
+}
+input{
+    width:100%;
+    padding:14px;
+    margin-bottom:16px;
+    border-radius:14px;
+    border:none;
+}
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:18px;
+    background: linear-gradient(135deg,#00c6ff,#0072ff);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+.profile p{
+    color:white;
+    text-align:left;
+    margin:8px 0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="box" id="loginBox">
+    <h2>🌊 Ocean Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="Auth.login()">Dive In 🌊</button>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="box" id="profileBox" style="display:none;">
+    <h2>👤 Profil User</h2>
+    <div class="profile">
+        <p><b>Username:</b> <span id="pUsername"></span></p>
+        <p><b>Jabatan:</b> <span id="pRole"></span></p>
+        <p><b>Umur:</b> <span id="pAge"></span></p>
+        <p><b>Email:</b> <span id="pEmail"></span></p>
+    </div>
+    <button onclick="Auth.logout()">Logout</button>
+</div>
+
+<script>
+// ===== CLASS USER =====
+class User {
+    constructor(username, password, role, age, email){
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.age = age;
+        this.email = email;
+    }
+}
+
+// ===== DATABASE CLASS =====
+class Database {
+    static init(){
+        if(!localStorage.getItem("users")){
+            const users = [
+                new User("admin","123","Administrator",25,"admin@mail.com"),
+                new User("user1","111","Staff",21,"user1@mail.com"),
+                new User("user2","222","Member",20,"user2@mail.com")
+            ];
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+    }
+
+    static getUsers(){
+        return JSON.parse(localStorage.getItem("users"));
+    }
+}
+
+// ===== AUTH CLASS =====
+class Auth {
+    static login(){
+        const u = username.value;
+        const p = password.value;
+
+        const users = Database.getUsers();
+        const found = users.find(x => x.username === u && x.password === p);
+
+        if(found){
+            localStorage.setItem("loginUser", JSON.stringify(found));
+            Auth.showProfile(found);
+        }else{
+            alert("❌ Login gagal!");
+        }
+    }
+
+    static showProfile(user){
+        loginBox.style.display="none";
+        profileBox.style.display="block";
+
+        pUsername.innerText = user.username;
+        pRole.innerText = user.role;
+        pAge.innerText = user.age;
+        pEmail.innerText = user.email;
+    }
+
+    static logout(){
+        localStorage.removeItem("loginUser");
+        profileBox.style.display="none";
+        loginBox.style.display="block";
+    }
+}
+
+// ===== INIT =====
+Database.init();
+
+// AUTO LOGIN
+const loggedUser = localStorage.getItem("loginUser");
+if(loggedUser){
+    Auth.showProfile(JSON.parse(loggedUser));
+}
+</script>
+
+</body>
+</html>
