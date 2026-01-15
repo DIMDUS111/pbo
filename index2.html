@@ -5,84 +5,57 @@
 <title>PBO Login – Ocean Theme</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    font-family:'Poppins','Segoe UI',sans-serif;
-}
+*{box-sizing:border-box;font-family:Poppins,Segoe UI,sans-serif}
 
-/* BACKGROUND */
 body{
-    margin:0;
-    height:100vh;
-    overflow:hidden;
-    background:
-        linear-gradient(to bottom, rgba(0,40,70,.7), rgba(0,10,30,.9)),
-        url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
-    background-size:cover;
-    background-position:center;
+    margin:0;height:100vh;overflow:hidden;
+    background:linear-gradient(to bottom,rgba(0,40,70,.7),rgba(0,10,30,.9)),
+    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
+    background-size:cover;background-position:center;
 }
 
-/* PAGES */
 .pages{
-    width:200%;
-    height:100%;
-    display:flex;
+    width:200%;height:100%;display:flex;
     transition:transform .8s ease-in-out;
 }
 
-/* PAGE */
 .page{
-    width:50%;
-    height:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    width:50%;height:100%;
+    display:flex;justify-content:center;align-items:center;
 }
 
-/* CARD */
 .box{
-    width:380px;
-    padding:32px;
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(14px);
-    border-radius:24px;
-    border:2px solid rgba(255,255,255,0.35);
-    animation: float 5s ease-in-out infinite;
+    width:420px;padding:28px;
+    background:rgba(255,255,255,.18);
+    backdrop-filter:blur(14px);
+    border-radius:24px;border:2px solid rgba(255,255,255,.35);
 }
 
-@keyframes float{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-10px)}
-}
-
-h2{
-    color:#eafaff;
-    text-align:center;
-}
+h2{color:#eafaff;text-align:center}
 
 input{
-    width:100%;
-    padding:14px;
-    margin-bottom:16px;
-    border-radius:14px;
-    border:none;
+    width:100%;padding:14px;margin-bottom:14px;
+    border-radius:14px;border:none;
 }
 
 button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:18px;
-    background: linear-gradient(135deg,#00c6ff,#0072ff);
-    color:white;
-    font-weight:600;
+    width:100%;padding:14px;border:none;border-radius:18px;
+    background:linear-gradient(135deg,#00c6ff,#0072ff);
+    color:#fff;font-weight:600;cursor:pointer;
 }
 
-.profile p{
-    color:white;
-    margin:10px 0;
-    font-size:15px;
+.profile p{color:#fff;margin:8px 0}
+
+/* TABLE */
+table{
+    width:100%;border-collapse:collapse;margin-top:12px;
+    color:white;font-size:14px;
 }
+th,td{
+    border:1px solid rgba(255,255,255,.4);
+    padding:8px;text-align:center;
+}
+th{background:rgba(0,120,255,.6)}
 </style>
 </head>
 
@@ -90,35 +63,36 @@ button{
 
 <div class="pages" id="pages">
 
-    <!-- LOGIN -->
-    <div class="page">
-        <div class="box">
-            <h2>🌊 Login</h2>
-            <input id="username" placeholder="Username">
-            <input id="password" type="password" placeholder="Password">
-            <button onclick="Auth.login()">Login</button>
-        </div>
+<!-- LOGIN -->
+<div class="page">
+    <div class="box">
+        <h2>🌊 Login</h2>
+        <input id="username" placeholder="Username">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="Auth.login()">Login</button>
     </div>
+</div>
 
-    <!-- PROFILE -->
-    <div class="page">
-        <div class="box">
-            <h2 id="profileTitle"></h2>
-            <div class="profile" id="profileContent"></div>
-            <button onclick="Auth.logout()">Logout</button>
-        </div>
+<!-- PROFILE -->
+<div class="page">
+    <div class="box">
+        <h2 id="profileTitle"></h2>
+        <div id="profileContent" class="profile"></div>
+        <div id="tableMahasiswa"></div>
+        <button onclick="Auth.logout()">Logout</button>
     </div>
+</div>
 
 </div>
 
 <script>
-// ===== USER CLASS =====
+// ===== CLASS USER =====
 class User{
     constructor(username,password,role,profile){
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.profile = profile;
+        this.username=username;
+        this.password=password;
+        this.role=role;
+        this.profile=profile;
     }
 }
 
@@ -126,28 +100,14 @@ class User{
 class Database{
     static init(){
         if(!localStorage.getItem("users")){
-            const users = [
-                new User("admin","123","admin",{
-                    namaDosen:"Pak Wawan",
-                    prodi:"Teknik Informatika"
-                }),
-                new User("andi","111","user",{
-                    nama:"Andi",
-                    umur:21,
-                    jurusan:"Informatika",
-                    prodi:"S1 Informatika"
-                }),
-                new User("budi","111","user",{
-                    nama:"Budi",
-                    umur:22,
-                    jurusan:"Sistem Informasi",
-                    prodi:"S1 Sistem Informasi"
-                })
+            const users=[
+                new User("admin","123","admin",{namaDosen:"Pak Wawan",prodi:"Teknik Informatika"}),
+                new User("andi","111","user",{nama:"Andi",umur:21,jurusan:"Informatika",prodi:"S1 Informatika"}),
+                new User("budi","111","user",{nama:"Budi",umur:22,jurusan:"Sistem Informasi",prodi:"S1 Sistem Informasi"})
             ];
-            localStorage.setItem("users", JSON.stringify(users));
+            localStorage.setItem("users",JSON.stringify(users));
         }
     }
-
     static getUsers(){
         return JSON.parse(localStorage.getItem("users"));
     }
@@ -156,54 +116,66 @@ class Database{
 // ===== AUTH =====
 class Auth{
     static login(){
-        const u = username.value;
-        const p = password.value;
-
-        const user = Database.getUsers()
-            .find(x => x.username === u && x.password === p);
-
-        if(!user){
-            alert("Login gagal!");
-            return;
-        }
-
-        localStorage.setItem("loginUser", JSON.stringify(user));
+        const u=username.value,p=password.value;
+        const user=Database.getUsers().find(x=>x.username===u&&x.password===p);
+        if(!user){alert("Login gagal!");return;}
+        localStorage.setItem("loginUser",JSON.stringify(user));
         Auth.showProfile(user);
     }
 
     static showProfile(user){
-        pages.style.transform = "translateX(-50%)";
-        profileContent.innerHTML = "";
+        pages.style.transform="translateX(-50%)";
+        profileContent.innerHTML="";
+        tableMahasiswa.innerHTML="";
 
-        if(user.role === "admin"){
-            profileTitle.innerText = "👨‍🏫 Profil Dosen";
-            profileContent.innerHTML = `
+        if(user.role==="admin"){
+            profileTitle.innerText="👨‍🏫 Profil Dosen";
+            profileContent.innerHTML=`
                 <p><b>Nama Dosen:</b> ${user.profile.namaDosen}</p>
                 <p><b>Program Studi:</b> ${user.profile.prodi}</p>
             `;
+            Auth.renderTable();
         }else{
-            profileTitle.innerText = "👤 Profil Mahasiswa";
-            profileContent.innerHTML = `
+            profileTitle.innerText="👤 Profil Mahasiswa";
+            profileContent.innerHTML=`
                 <p><b>Nama:</b> ${user.profile.nama}</p>
                 <p><b>Umur:</b> ${user.profile.umur} tahun</p>
                 <p><b>Jurusan:</b> ${user.profile.jurusan}</p>
-                <p><b>Program Studi:</b> ${user.profile.prodi}</p>
+                <p><b>Prodi:</b> ${user.profile.prodi}</p>
             `;
         }
     }
 
+    static renderTable(){
+        const users=Database.getUsers().filter(u=>u.role==="user");
+        let rows=users.map(u=>`
+            <tr>
+                <td>${u.profile.nama}</td>
+                <td>${u.profile.umur}</td>
+                <td>${u.profile.jurusan}</td>
+                <td>${u.profile.prodi}</td>
+            </tr>
+        `).join("");
+
+        tableMahasiswa.innerHTML=`
+            <h3 style="color:white;text-align:center">📋 Data Mahasiswa</h3>
+            <table>
+                <tr><th>Nama</th><th>Umur</th><th>Jurusan</th><th>Prodi</th></tr>
+                ${rows}
+            </table>
+        `;
+    }
+
     static logout(){
         localStorage.removeItem("loginUser");
-        pages.style.transform = "translateX(0)";
+        pages.style.transform="translateX(0)";
     }
 }
 
-// ===== INIT =====
+// INIT
 Database.init();
-const saved = localStorage.getItem("loginUser");
-if(saved){
-    Auth.showProfile(JSON.parse(saved));
-}
+const saved=localStorage.getItem("loginUser");
+if(saved) Auth.showProfile(JSON.parse(saved));
 </script>
 
 </body>
