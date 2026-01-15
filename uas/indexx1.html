@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>PBO Login – Video Ocean</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    font-family:'Poppins','Segoe UI',sans-serif;
+}
+
+/* VIDEO BACKGROUND */
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
+/* VIDEO FULL SCREEN */
+video{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:-2;
+}
+
+/* OVERLAY GELAP */
+.overlay{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(
+        to bottom,
+        rgba(0,20,40,.6),
+        rgba(0,0,0,.8)
+    );
+    z-index:-1;
+}
+
+/* CARD */
+.box{
+    width:350px;
+    padding:32px;
+    text-align:center;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    border-radius:24px;
+    border:2px solid rgba(255,255,255,0.35);
+    box-shadow:
+        0 0 25px rgba(0,180,255,.4),
+        0 0 50px rgba(0,120,255,.25);
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-10px)}
+}
+
+h2{
+    color:#eafaff;
+    margin-bottom:26px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-bottom:16px;
+    border-radius:14px;
+    border:none;
+    outline:none;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:18px;
+    background: linear-gradient(135deg,#00c6ff,#0072ff);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+
+#welcome{
+    color:#eafaff;
+    font-size:22px;
+    margin-bottom:22px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<video autoplay muted loop>
+    <source src="ocean.mp4" type="video/mp4">
+</video>
+<div class="overlay"></div>
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+    <h2>🌊 Ocean Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Dive In 🌊</button>
+</div>
+
+<!-- USER -->
+<div class="box" id="userBox" style="display:none;">
+    <h2 id="welcome"></h2>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+// ===== CLASS USER =====
+class User{
+    constructor(username,password){
+        this.username=username;
+        this.password=password;
+    }
+}
+
+// ===== DATABASE =====
+class Database{
+    static init(){
+        const users=[
+            new User("dimas","123"),
+            new User("pakwawan","123"),
+            new User("dimdus","123")
+        ];
+        localStorage.setItem("users",JSON.stringify(users));
+    }
+
+    static getUsers(){
+        return JSON.parse(localStorage.getItem("users"));
+    }
+}
+
+// ===== LOGIN =====
+function login(){
+    const username=usernameInput.value;
+    const password=passwordInput.value;
+
+    const users=Database.getUsers();
+    const found=users.find(
+        u=>u.username===username && u.password===password
+    );
+
+    if(found){
+        loginBox.style.display="none";
+        userBox.style.display="block";
+        welcome.innerText="🐋 Welcome, "+found.username;
+    }else{
+        alert("❌ Login gagal!");
+    }
+}
+
+function logout(){
+    location.reload();
+}
+
+// ELEMENT SHORTCUT
+const usernameInput=document.getElementById("username");
+const passwordInput=document.getElementById("password");
+const loginBox=document.getElementById("loginBox");
+const userBox=document.getElementById("userBox");
+const welcome=document.getElementById("welcome");
+
+// INIT
+Database.init();
+</script>
+
+</body>
+</html>
