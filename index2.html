@@ -29,10 +29,13 @@ body{
     backdrop-filter: blur(14px);
     border-radius:24px;
     border:2px solid rgba(255,255,255,0.35);
+    animation: float 5s ease-in-out infinite;
 }
-h2{
-    color:#eafaff;
+@keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-10px)}
 }
+h2{color:#eafaff;}
 input{
     width:100%;
     padding:14px;
@@ -48,7 +51,6 @@ button{
     background: linear-gradient(135deg,#00c6ff,#0072ff);
     color:white;
     font-weight:600;
-    cursor:pointer;
 }
 .profile p{
     color:white;
@@ -60,57 +62,59 @@ button{
 
 <body>
 
-<!-- LOGIN PAGE -->
+<!-- LOGIN -->
 <div class="box" id="loginBox">
-    <h2>🌊 Ocean Login</h2>
+    <h2>🌊 Login</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
-    <button onclick="Auth.login()">Dive In 🌊</button>
+    <button onclick="Auth.login()">Login</button>
 </div>
 
-<!-- PROFILE PAGE -->
+<!-- PROFILE -->
 <div class="box" id="profileBox" style="display:none;">
-    <h2>👤 Profil User</h2>
-    <div class="profile">
-        <p><b>Username:</b> <span id="pUsername"></span></p>
-        <p><b>Jabatan:</b> <span id="pRole"></span></p>
-        <p><b>Umur:</b> <span id="pAge"></span></p>
-        <p><b>Email:</b> <span id="pEmail"></span></p>
-    </div>
+    <h2 id="profileTitle"></h2>
+    <div class="profile" id="profileContent"></div>
     <button onclick="Auth.logout()">Logout</button>
 </div>
 
 <script>
 // ===== CLASS USER =====
 class User {
-    constructor(username, password, role, age, email){
+    constructor(username, password, role, data){
         this.username = username;
         this.password = password;
         this.role = role;
-        this.age = age;
-        this.email = email;
+        this.data = data;
     }
 }
 
-// ===== DATABASE CLASS =====
+// ===== DATABASE =====
 class Database {
     static init(){
         if(!localStorage.getItem("users")){
             const users = [
-                new User("admin","123","Administrator",25,"admin@mail.com"),
-                new User("user1","111","Staff",21,"user1@mail.com"),
-                new User("user2","222","Member",20,"user2@mail.com")
+                new User(
+                    "admin","123","admin",
+                    { namaDosen:"Pak Wawan" }
+                ),
+                new User(
+                    "andi","111","user",
+                    { nama:"Andi", umur:21, jurusan:"Informatika" }
+                ),
+                new User(
+                    "budi","111","user",
+                    { nama:"Budi", umur:22, jurusan:"Sistem Informasi" }
+                )
             ];
             localStorage.setItem("users", JSON.stringify(users));
         }
     }
-
     static getUsers(){
         return JSON.parse(localStorage.getItem("users"));
     }
 }
 
-// ===== AUTH CLASS =====
+// ===== AUTH =====
 class Auth {
     static login(){
         const u = username.value;
@@ -123,18 +127,28 @@ class Auth {
             localStorage.setItem("loginUser", JSON.stringify(found));
             Auth.showProfile(found);
         }else{
-            alert("❌ Login gagal!");
+            alert("Login gagal!");
         }
     }
 
     static showProfile(user){
         loginBox.style.display="none";
         profileBox.style.display="block";
+        profileContent.innerHTML = "";
 
-        pUsername.innerText = user.username;
-        pRole.innerText = user.role;
-        pAge.innerText = user.age;
-        pEmail.innerText = user.email;
+        if(user.role === "admin"){
+            profileTitle.innerText = "👨‍🏫 Profil Dosen";
+            profileContent.innerHTML = `
+                <p><b>Nama Dosen:</b> ${user.data.namaDosen}</p>
+            `;
+        }else{
+            profileTitle.innerText = "👤 Profil Mahasiswa";
+            profileContent.innerHTML = `
+                <p><b>Nama:</b> ${user.data.nama}</p>
+                <p><b>Umur:</b> ${user.data.umur}</p>
+                <p><b>Jurusan:</b> ${user.data.jurusan}</p>
+            `;
+        }
     }
 
     static logout(){
@@ -146,11 +160,9 @@ class Auth {
 
 // ===== INIT =====
 Database.init();
-
-// AUTO LOGIN
-const loggedUser = localStorage.getItem("loginUser");
-if(loggedUser){
-    Auth.showProfile(JSON.parse(loggedUser));
+const saved = localStorage.getItem("loginUser");
+if(saved){
+    Auth.showProfile(JSON.parse(saved));
 }
 </script>
 
