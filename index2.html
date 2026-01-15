@@ -9,18 +9,37 @@
     box-sizing:border-box;
     font-family:'Poppins','Segoe UI',sans-serif;
 }
+
+/* BACKGROUND */
 body{
     margin:0;
     height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    overflow:hidden;
     background:
         linear-gradient(to bottom, rgba(0,40,70,.7), rgba(0,10,30,.9)),
         url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
     background-size:cover;
     background-position:center;
 }
+
+/* PAGE WRAPPER */
+.pages{
+    width:200%;
+    height:100%;
+    display:flex;
+    transition:transform .8s ease;
+}
+
+/* EACH PAGE */
+.page{
+    width:50%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* CARD */
 .box{
     width:360px;
     padding:32px;
@@ -31,10 +50,12 @@ body{
     border:2px solid rgba(255,255,255,0.35);
     animation: float 5s ease-in-out infinite;
 }
+
 @keyframes float{
     0%,100%{transform:translateY(0)}
     50%{transform:translateY(-10px)}
 }
+
 h2{color:#eafaff;}
 input{
     width:100%;
@@ -62,25 +83,33 @@ button{
 
 <body>
 
-<!-- LOGIN -->
-<div class="box" id="loginBox">
-    <h2>🌊 Login</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="Auth.login()">Login</button>
-</div>
+<div class="pages" id="pages">
 
-<!-- PROFILE -->
-<div class="box" id="profileBox" style="display:none;">
-    <h2 id="profileTitle"></h2>
-    <div class="profile" id="profileContent"></div>
-    <button onclick="Auth.logout()">Logout</button>
+    <!-- LOGIN PAGE -->
+    <div class="page">
+        <div class="box">
+            <h2>🌊 Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="Auth.login()">Login</button>
+        </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page">
+        <div class="box">
+            <h2 id="profileTitle"></h2>
+            <div class="profile" id="profileContent"></div>
+            <button onclick="Auth.logout()">Logout</button>
+        </div>
+    </div>
+
 </div>
 
 <script>
 // ===== CLASS USER =====
-class User {
-    constructor(username, password, role, data){
+class User{
+    constructor(username,password,role,data){
         this.username = username;
         this.password = password;
         this.role = role;
@@ -89,22 +118,13 @@ class User {
 }
 
 // ===== DATABASE =====
-class Database {
+class Database{
     static init(){
         if(!localStorage.getItem("users")){
             const users = [
-                new User(
-                    "admin","123","admin",
-                    { namaDosen:"Pak Wawan" }
-                ),
-                new User(
-                    "andi","111","user",
-                    { nama:"Andi", umur:21, jurusan:"Informatika" }
-                ),
-                new User(
-                    "budi","111","user",
-                    { nama:"Budi", umur:22, jurusan:"Sistem Informasi" }
-                )
+                new User("admin","123","admin",{namaDosen:"Pak Wawan"}),
+                new User("andi","111","user",{nama:"Andi",umur:21,jurusan:"Informatika"}),
+                new User("budi","111","user",{nama:"Budi",umur:22,jurusan:"Sistem Informasi"})
             ];
             localStorage.setItem("users", JSON.stringify(users));
         }
@@ -115,27 +135,26 @@ class Database {
 }
 
 // ===== AUTH =====
-class Auth {
+class Auth{
     static login(){
         const u = username.value;
         const p = password.value;
 
-        const users = Database.getUsers();
-        const found = users.find(x => x.username === u && x.password === p);
+        const user = Database.getUsers()
+            .find(x => x.username === u && x.password === p);
 
-        if(found){
-            localStorage.setItem("loginUser", JSON.stringify(found));
-            Auth.showProfile(found);
+        if(user){
+            localStorage.setItem("loginUser", JSON.stringify(user));
+            Auth.showProfile(user);
         }else{
             alert("Login gagal!");
         }
     }
 
     static showProfile(user){
-        loginBox.style.display="none";
-        profileBox.style.display="block";
-        profileContent.innerHTML = "";
+        pages.style.transform = "translateX(-50%)";
 
+        profileContent.innerHTML = "";
         if(user.role === "admin"){
             profileTitle.innerText = "👨‍🏫 Profil Dosen";
             profileContent.innerHTML = `
@@ -153,8 +172,7 @@ class Auth {
 
     static logout(){
         localStorage.removeItem("loginUser");
-        profileBox.style.display="none";
-        loginBox.style.display="block";
+        pages.style.transform = "translateX(0)";
     }
 }
 
